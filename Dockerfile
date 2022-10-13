@@ -4,10 +4,18 @@ ENV APP_HOME /app
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-RUN apk apk update
 RUN apk add make
 
-RUN apk add --update alpine-sdk
+RUN apk add --update \
+  build-base \
+  libxml2-dev \
+  #chromium-chromedriver
+  libxslt-dev \
+  && rm -rf /var/cache/apk/*
+
+# Use libxml2, libxslt a packages from alpine for building nokogiri
+RUN bundle config build.nokogiri --use-system-libraries
+
 
 ADD Gemfile* $APP_HOME/
 RUN bundle install
